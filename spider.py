@@ -1,6 +1,6 @@
-from io import StringIO
 from requests import get
-from pandas import read_html as rhtml
+from bs4 import BeautifulSoup 
+from pandas import DataFrame
 from urllib3 import disable_warnings, exceptions
 from datetime import datetime
 
@@ -11,18 +11,21 @@ disable_warnings(exceptions.InsecureRequestWarning)
 url = 'https://habous.gov.ma/prieres/horaire_hijri_2.php?ville=104'
 response = get(url, verify=False)
 
-html_content: str = ''
-
 if response.status_code == 200:
-    html_content = response.text
+    soup = BeautifulSoup(response.text, 'html.parser')  
 else:
     print('Failed to retrieve the webpage')
+    exit()
 
+html_table = soup.find('table')  
+rows = html_table.find_all('tr') # type: ignore
 
-# Parse the table into pandas Dataframe for simple manipulation
-table = rhtml(StringIO(html_content))
-table = table[0][table[0].columns[:-1]]
+data = []
+for row in rows:
+    columns = row.find_all(['td'])
+    data.append([col.text.strip() for col in columns])
 
+table = DataFrame(data)
 '''
 print(table)
            0                   1               2      3       4      5      6       7
@@ -60,4 +63,4 @@ print(table)
 '''
 
 today = datetime.today().month
-print(table[2][today])
+print(table[1:30][table[1:30][2].astype(int) == today])
