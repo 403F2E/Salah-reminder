@@ -16,3 +16,14 @@ if __name__ == "__main__":
         time="target time"
     )
 
+# import subprocess
+#
+# ps_script = """
+# $global:myVar = 'Hello from Python'
+# Write-Output $global:myVar
+# """
+#
+# process = subprocess.Popen(["powershell", "-Command", ps_script], stdout=subprocess.PIPE, text=True)
+# output, _ = process.communicate()
+#
+# print(f"PowerShell Global Variable: {output.strip()}")
